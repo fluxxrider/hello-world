@@ -10,31 +10,39 @@ import math
 # Current data points (Day 5)
 CURRENT_VIEWS = 96700
 CURRENT_DAY = 5
-VIEWS_PER_HOUR_NOW = 532  # Real-time from analytics
+VIEWS_PER_HOUR_NOW = 550  # CONSTANT - not decaying!
+CTR = 0.06  # 6% click-through rate (good for YouTube)
 
-# YouTube video growth typically follows a logarithmic decay pattern
-# V(t) = V_initial + k * ln(1 + t) for long-term
-# But viral videos often have extended growth phases
+# KEY INSIGHT: Video is maintaining constant VPH
+# This indicates strong algorithmic support
 
-def predict_views(days_ahead=30):
+def predict_views_constant(days_ahead=30):
     """
-    Predict future views using a modified logarithmic model
-    accounting for the video's viral performance (11x typical)
+    Model 1: Constant VPH (current behavior)
+    If algorithm keeps pushing at same rate
     """
-
-    # Calculate current daily rate (views/day at day 5)
-    daily_rate_now = VIEWS_PER_HOUR_NOW * 24  # ~12,768 views/day
-
-    # Viral coefficient (video is getting 11x typical views)
-    viral_multiplier = 11
-
-    # Decay rate - views typically drop ~15-25% per day after initial surge
-    # This video has strong retention (8:59 vs 2:23 typical) so slower decay
-    decay_rate = 0.12  # 12% daily decay (slower due to high retention)
-
+    daily_rate = VIEWS_PER_HOUR_NOW * 24  # 13,200/day
     predictions = []
     total_views = CURRENT_VIEWS
-    daily_rate = daily_rate_now
+
+    for day in range(CURRENT_DAY, CURRENT_DAY + days_ahead + 1):
+        predictions.append({
+            'day': day,
+            'total_views': int(total_views),
+            'daily_views': int(daily_rate)
+        })
+        total_views += daily_rate
+
+    return predictions
+
+def predict_views_gradual_decay(days_ahead=60):
+    """
+    Model 2: Gradual decay starting after day 7-10
+    More realistic - algorithm eventually moves on
+    """
+    daily_rate = VIEWS_PER_HOUR_NOW * 24  # 13,200/day
+    predictions = []
+    total_views = CURRENT_VIEWS
 
     for day in range(CURRENT_DAY, CURRENT_DAY + days_ahead + 1):
         predictions.append({
@@ -43,12 +51,35 @@ def predict_views(days_ahead=30):
             'daily_views': int(daily_rate)
         })
 
-        # Apply decay
-        daily_rate *= (1 - decay_rate)
+        # Decay starts after day 10, gradual 8% per day
+        if day >= 10:
+            daily_rate *= 0.92
+            daily_rate = max(daily_rate, 1000)  # Long-tail minimum
 
-        # Long-tail minimum (video never goes to zero, keeps getting ~500-1000/day)
-        long_tail_minimum = 800
-        daily_rate = max(daily_rate, long_tail_minimum)
+        total_views += daily_rate
+
+    return predictions
+
+def predict_views_extended_viral(days_ahead=60):
+    """
+    Model 3: Extended viral - stays hot for 2-3 weeks
+    For videos that really catch on
+    """
+    daily_rate = VIEWS_PER_HOUR_NOW * 24
+    predictions = []
+    total_views = CURRENT_VIEWS
+
+    for day in range(CURRENT_DAY, CURRENT_DAY + days_ahead + 1):
+        predictions.append({
+            'day': day,
+            'total_views': int(total_views),
+            'daily_views': int(daily_rate)
+        })
+
+        # Slow decay after day 21
+        if day >= 21:
+            daily_rate *= 0.90
+            daily_rate = max(daily_rate, 1500)
 
         total_views += daily_rate
 
@@ -56,92 +87,92 @@ def predict_views(days_ahead=30):
 
 def main():
     print("=" * 60)
-    print("VIDEO VIEW PREDICTION MODEL")
+    print("VIDEO VIEW PREDICTION MODEL (UPDATED)")
     print("Video: 'Investigating A Server That Doesn't...'")
     print("=" * 60)
     print()
 
+    daily_rate = VIEWS_PER_HOUR_NOW * 24
+
     print("CURRENT PERFORMANCE (Day 5):")
     print(f"  • Views: {CURRENT_VIEWS:,}")
-    print(f"  • Real-time: {VIEWS_PER_HOUR_NOW} views/hour")
-    print(f"  • Daily rate: ~{VIEWS_PER_HOUR_NOW * 24:,} views/day")
-    print(f"  • Performance: 11x typical (viral)")
-    print(f"  • Avg view duration: 8:59 (3.7x typical retention)")
+    print(f"  • Real-time: {VIEWS_PER_HOUR_NOW} views/hour (CONSTANT!)")
+    print(f"  • Daily rate: {daily_rate:,} views/day")
+    print(f"  • CTR: {CTR*100}% (solid click-through rate)")
+    print(f"  • Status: ALGORITHM IS STILL PUSHING")
     print()
 
-    predictions = predict_views(60)  # Predict 60 days ahead
+    # Get all three model predictions
+    constant = predict_views_constant(60)
+    gradual = predict_views_gradual_decay(60)
+    extended = predict_views_extended_viral(60)
 
-    print("PREDICTIONS:")
-    print("-" * 60)
-
-    milestones = [7, 14, 30, 60]
-    for m in milestones:
-        pred = next((p for p in predictions if p['day'] == m), None)
-        if pred:
-            print(f"  Day {m:2}: {pred['total_views']:>10,} views "
-                  f"(+{pred['daily_views']:,}/day)")
-
+    print("=" * 60)
+    print("THREE SCENARIOS (constant 550 VPH baseline):")
+    print("=" * 60)
     print()
-    print("KEY MILESTONES:")
+
+    print("📈 SCENARIO 1: Constant VPH continues")
+    print("   (Algorithm keeps pushing indefinitely)")
     print("-" * 60)
+    for day in [7, 14, 30]:
+        pred = next(p for p in constant if p['day'] == day)
+        print(f"   Day {day:2}: {pred['total_views']:>10,} views")
+    print()
 
-    # Find when we hit certain view counts
-    targets = [100_000, 150_000, 200_000, 250_000, 300_000, 500_000]
+    print("📊 SCENARIO 2: Gradual decay after Day 10 (MOST LIKELY)")
+    print("   (Algorithm moves on, 8%/day decay)")
+    print("-" * 60)
+    for day in [7, 14, 30, 60]:
+        pred = next(p for p in gradual if p['day'] == day)
+        print(f"   Day {day:2}: {pred['total_views']:>10,} views (+{pred['daily_views']:,}/day)")
+    print()
 
+    print("🚀 SCENARIO 3: Extended viral (stays hot 3 weeks)")
+    print("   (Video keeps performing, slow decay after Day 21)")
+    print("-" * 60)
+    for day in [7, 14, 30, 60]:
+        pred = next(p for p in extended if p['day'] == day)
+        print(f"   Day {day:2}: {pred['total_views']:>10,} views (+{pred['daily_views']:,}/day)")
+    print()
+
+    print("=" * 60)
+    print("MILESTONE PREDICTIONS (Most Likely Scenario):")
+    print("=" * 60)
+
+    targets = [100_000, 150_000, 200_000, 300_000, 500_000]
     for target in targets:
-        for pred in predictions:
+        for pred in gradual:
             if pred['total_views'] >= target:
-                print(f"  {target//1000}K views: ~Day {pred['day']} "
+                emoji = "✅" if target <= 200_000 else "🎯"
+                print(f"  {emoji} {target//1000}K views: Day {pred['day']} "
                       f"({pred['day'] - CURRENT_DAY} days from now)")
                 break
         else:
-            # Extrapolate further if needed
-            last = predictions[-1]
-            if last['total_views'] < target:
-                remaining = target - last['total_views']
-                extra_days = remaining / 800  # long-tail rate
-                print(f"  {target//1000}K views: ~Day {int(last['day'] + extra_days)} "
-                      f"({int(last['day'] + extra_days - CURRENT_DAY)} days from now)")
+            print(f"  ⏳ {target//1000}K views: Requires extended viral performance")
 
     print()
     print("=" * 60)
-    print("FINAL PREDICTIONS:")
+    print("FINAL ESTIMATE:")
     print("=" * 60)
-
-    day_30 = next((p for p in predictions if p['day'] == 30), None)
-    day_60 = next((p for p in predictions if p['day'] == 60), None)
-
     print()
-    print(f"  📊 1 WEEK (Day 7):    ~{predictions[2]['total_views']:,} views")
-    print(f"  📊 2 WEEKS (Day 14):  ~{next(p for p in predictions if p['day'] == 14)['total_views']:,} views")
-    print(f"  📊 1 MONTH (Day 30):  ~{day_30['total_views']:,} views")
-    print(f"  📊 2 MONTHS (Day 60): ~{day_60['total_views']:,} views")
+    print(f"  Conservative:  ~200,000 - 250,000 views")
+    print(f"  Expected:      ~250,000 - 350,000 views")
+    print(f"  Optimistic:    ~400,000 - 500,000+ views")
     print()
-
-    # Best/worst case scenarios
-    print("SCENARIO ANALYSIS:")
-    print("-" * 60)
-    print("  Conservative (faster decay, 18%/day):")
-    conservative = int(CURRENT_VIEWS * 1.8)  # ~174k
-    print(f"    → ~150,000 - 180,000 total views")
+    print("  🎯 BEST ESTIMATE: 250,000 - 300,000 VIEWS")
     print()
-    print("  Expected (current trajectory):")
-    print(f"    → ~200,000 - 250,000 total views")
-    print()
-    print("  Optimistic (algorithm keeps pushing, 8%/day decay):")
-    print(f"    → ~350,000 - 500,000+ total views")
-    print()
-
     print("=" * 60)
-    print("FACTORS THAT COULD INCREASE VIEWS:")
-    print("  ✓ High retention (8:59) signals quality to algorithm")
-    print("  ✓ Strong browse/suggested traffic (83% algorithmic)")
-    print("  ✓ Subscriber conversion (+930) builds audience")
+    print("WHY CONSTANT VPH IS BULLISH:")
+    print("  • Most videos decay 15-20%/day after day 2-3")
+    print("  • Yours is FLAT at 550 VPH on day 5")
+    print("  • 6% CTR is solid (avg is 2-10%)")
+    print("  • Algorithm clearly likes this video")
     print()
     print("WATCH FOR:")
-    print("  • If daily views stabilize above 5k → likely 300k+ total")
-    print("  • If algorithm keeps suggesting → could hit 500k+")
-    print("  • External sharing/viral moment → potential for 1M+")
+    print("  • VPH staying above 400 through Day 10 → likely 300k+")
+    print("  • VPH increasing → algorithm is accelerating, 500k+ possible")
+    print("  • VPH dropping below 300 → normal decay beginning")
     print("=" * 60)
 
 if __name__ == "__main__":
