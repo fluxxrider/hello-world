@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Organ Printing: Revolutionizing Transplant Medicine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .poster {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 30px solid #ff6b6b;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+
+        .criterion-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 50px 40px 40px;
+        }
+
+        /* Introduction */
+        .intro {
+            background: linear-gradient(135deg, #533483 0%, #e94560 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .intro h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro p {
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .stat-box {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 5px;
+            font-weight: 600;
+        }
+
+        /* Science Section */
+        .science-section {
+            background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+            border: 2px solid #e94560;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .science-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6em;
+            color: #e94560;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 180px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+
+        .process-step::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: #e94560;
+        }
+
+        .process-step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: #e94560;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .process-step h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1em;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .process-step p {
+            font-size: 0.85em;
+            line-height: 1.5;
+            color: #ccc;
+        }
+
+        .science-explanation {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid #e94560;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .science-explanation p {
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .science-explanation p:last-child {
+            margin-bottom: 0;
+        }
+
+        .key-term {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        /* Factors Grid */
+        .factors-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .factor-card {
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .factor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+
+        .factor-ethical {
+            background: linear-gradient(180deg, #2d132c 0%, #1a1a2e 100%);
+            border: 1px solid #9b59b6;
+        }
+
+        .factor-ethical::before {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+        }
+
+        .factor-social {
+            background: linear-gradient(180deg, #0a3d62 0%, #1a1a2e 100%);
+            border: 1px solid #3498db;
+        }
+
+        .factor-social::before {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+
+        .factor-card h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .factor-ethical h2 {
+            color: #9b59b6;
+        }
+
+        .factor-social h2 {
+            color: #3498db;
+        }
+
+        .factor-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+        }
+
+        .factor-ethical .factor-icon {
+            background: rgba(155, 89, 182, 0.2);
+        }
+
+        .factor-social .factor-icon {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .implications-list {
+            list-style: none;
+        }
+
+        .implications-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            line-height: 1.7;
+        }
+
+        .implications-list li:last-child {
+            border-bottom: none;
+        }
+
+        .positive {
+            border-left: 3px solid #2ecc71;
+            padding-left: 15px;
+            margin-left: 0;
+        }
+
+        .negative {
+            border-left: 3px solid #e74c3c;
+            padding-left: 15px;
+            margin-left: 0;
+        }
+
+        .complex {
+            border-left: 3px solid #f39c12;
+            padding-left: 15px;
+            margin-left: 0;
+        }
+
+        .label {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-right: 8px;
+            text-transform: uppercase;
+        }
+
+        .label-positive {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .label-negative {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .label-complex {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        /* Evaluation Section */
+        .evaluation {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .evaluation h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f1c40f;
+        }
+
+        .evaluation-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .eval-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .eval-box h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .eval-box.benefits h3 {
+            color: #2ecc71;
+        }
+
+        .eval-box.risks h3 {
+            color: #e74c3c;
+        }
+
+        .eval-box.verdict h3 {
+            color: #f1c40f;
+        }
+
+        .eval-box p {
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        /* Conclusion */
+        .conclusion {
+            background: linear-gradient(135deg, #e94560 0%, #533483 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .conclusion h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .conclusion p {
+            line-height: 1.9;
+            font-size: 1.05em;
+        }
+
+        /* References */
+        .references {
+            background: #0f0f1a;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .references h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #e94560;
+        }
+
+        .references ol {
+            padding-left: 25px;
+            font-size: 0.9em;
+            line-height: 2;
+            color: #aaa;
+        }
+
+        .references li {
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85em;
+            color: #666;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+
+            .poster {
+                box-shadow: none;
+                background: white;
+            }
+
+            .header {
+                background: #e94560 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .factor-card, .science-section, .intro, .evaluation, .conclusion, .references {
+                break-inside: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .factors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-flow {
+                flex-direction: column;
+            }
+
+            .process-step::after {
+                display: none;
+            }
+
+            .evaluation-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <header class="header">
+            <span class="criterion-badge">Criterion D: Reflecting on the Impact of Science</span>
+            <h1>3D Organ Printing</h1>
+            <p class="subtitle">Revolutionizing Transplant Medicine Through Bioprinting Technology</p>
+        </header>
+
+        <div class="content">
+            <!-- Introduction: The Problem -->
+            <section class="intro">
+                <h2>The Global Organ Shortage Crisis</h2>
+                <p>
+                    Every day, <span class="stat-box">17 people die</span> waiting for organ transplants in the United States alone.
+                    Globally, the demand for transplantable organs far exceeds supply, with over
+                    <span class="stat-box">100,000 patients</span> on waiting lists at any given time. Traditional organ
+                    donation cannot meet this demand due to limited donors, tissue compatibility issues, and organ rejection.
+                    <strong>3D bioprinting</strong> offers a revolutionary solution: creating patient-specific organs from their
+                    own cells, potentially eliminating both the shortage and rejection problems.
+                </p>
+            </section>
+
+            <!-- The Science: How It Works -->
+            <section class="science-section">
+                <h2>The Science of 3D Bioprinting</h2>
+
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <h3>Cell Harvesting</h3>
+                        <p><span class="key-term">Pluripotent stem cells</span> are extracted from the patient or reprogrammed from adult cells (iPSCs), capable of differentiating into any cell type.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <h3>Bio-ink Creation</h3>
+                        <p>Cells are suspended in <span class="key-term">bio-inks</span>—hydrogel mixtures containing living cells, growth factors, and nutrients that maintain cell viability during printing.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <h3>Scaffold Printing</h3>
+                        <p>Using CAD models from patient scans, a 3D printer deposits bio-ink onto <span class="key-term">biodegradable scaffolds</span> that provide structural support and degrade as tissue matures.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <h3>Vascularisation</h3>
+                        <p><span class="key-term">Vascularisation</span>—the formation of blood vessel networks—is critical. Printed channels allow nutrients and oxygen to reach all cells within the tissue.</p>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">5</div>
+                        <h3>Maturation</h3>
+                        <p>Tissues are placed in <span class="key-term">bioreactors</span>—controlled environments that simulate body conditions, allowing cells to mature and form functional tissue.</p>
+                    </div>
+                </div>
+
+                <div class="science-explanation">
+                    <p>
+                        The process begins when <span class="key-term">pluripotent stem cells</span>—cells capable of becoming any cell type in the body—are harvested from the patient. These cells are then combined with biocompatible materials to create <span class="key-term">bio-inks</span>, which serve as the "printing material." The bio-ink is precisely deposited layer-by-layer onto <span class="key-term">biodegradable scaffolds</span> made from materials like polylactic acid (PLA) or collagen, which provide temporary structural support.
+                    </p>
+                    <p>
+                        The most significant challenge in bioprinting is <span class="key-term">vascularisation</span>—creating functional blood vessel networks. Without adequate blood supply, cells more than 200 micrometres from a blood vessel will die. Scientists address this by printing sacrificial channels that form vessel pathways. Finally, printed constructs mature in <span class="key-term">bioreactors</span>, where mechanical stimulation and precise biochemical conditions encourage cells to organize into functional tissues.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Factors Grid -->
+            <div class="factors-grid">
+                <!-- Ethical Factor -->
+                <section class="factor-card factor-ethical">
+                    <h2>
+                        <span class="factor-icon">⚖️</span>
+                        Ethical Implications
+                    </h2>
+
+                    <ul class="implications-list">
+                        <li class="complex">
+                            <span class="label label-complex">Complex</span>
+                            <strong>Ownership and Commodification:</strong> Who owns a bioprinted organ—the patient whose cells were used, the company that printed it, or the healthcare provider? This raises unprecedented questions about whether human tissues can be patented or sold, potentially commodifying the human body in ways that challenge fundamental ethical principles about human dignity (Vermeulen et al., 2017).
+                        </li>
+
+                        <li class="complex">
+                            <span class="label label-complex">Complex</span>
+                            <strong>Creation of Living Tissues:</strong> The deliberate creation of living human tissues in laboratories challenges religious and philosophical beliefs about the sanctity of life. While some view this as "playing God," others argue that reducing suffering through medical innovation is a moral imperative. This tension requires careful societal dialogue (Gilbert et al., 2018).
+                        </li>
+
+                        <li class="negative">
+                            <span class="label label-negative">Challenge</span>
+                            <strong>Healthcare Inequality:</strong> With development costs exceeding millions of dollars, bioprinted organs may initially be available only to wealthy individuals or nations. This could widen existing healthcare disparities, creating a two-tiered system where life-saving technology is accessible based on economic status rather than medical need—directly contradicting principles of healthcare justice.
+                        </li>
+
+                        <li class="positive">
+                            <span class="label label-positive">Benefit</span>
+                            <strong>Reduced Ethical Burden:</strong> Unlike traditional transplantation, bioprinting eliminates ethical dilemmas around organ allocation, the pressure on grieving families for donation consent, and concerns about organ trafficking. Patient-specific organs also eliminate the ethical complexity of xenotransplantation (animal-to-human transplants).
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- Social Factor -->
+                <section class="factor-card factor-social">
+                    <h2>
+                        <span class="factor-icon">👥</span>
+                        Social Implications
+                    </h2>
+
+                    <ul class="implications-list">
+                        <li class="positive">
+                            <span class="label label-positive">Benefit</span>
+                            <strong>Improved Quality of Life:</strong> Patients receiving bioprinted organs made from their own cells would avoid lifelong immunosuppressive medications, which cause serious side effects including increased infection risk and cancer susceptibility. This dramatically improves survival rates and quality of life, allowing patients to live normally rather than managing chronic medication regimens.
+                        </li>
+
+                        <li class="positive">
+                            <span class="label label-positive">Benefit</span>
+                            <strong>Elimination of Organ Black Markets:</strong> The WHO estimates that 10% of transplants worldwide involve trafficked organs. By providing a legitimate, scalable supply of organs, bioprinting could eliminate the demand that drives illegal organ trafficking—a practice that exploits vulnerable populations in developing nations and involves serious human rights abuses (Danovitch & Delmonico, 2008).
+                        </li>
+
+                        <li class="complex">
+                            <span class="label label-complex">Complex</span>
+                            <strong>Cultural and Psychological Acceptance:</strong> Society must adapt to the concept of "artificial" organs. Some individuals may feel that bioprinted organs are less "real" or carry psychological concerns about their identity. Cultural attitudes toward technology integration with the human body vary significantly across societies, requiring sensitive public education.
+                        </li>
+
+                        <li class="negative">
+                            <span class="label label-negative">Challenge</span>
+                            <strong>Disruption to Medical Workforce:</strong> Widespread bioprinting could reduce demand for transplant surgeons, organ procurement specialists, and related healthcare workers. While new technical roles would emerge, this transition could cause significant workforce displacement and require substantial retraining programs.
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <!-- Balanced Evaluation -->
+            <section class="evaluation">
+                <h2>Balanced Evaluation: Benefits vs. Risks</h2>
+
+                <div class="evaluation-content">
+                    <div class="eval-box benefits">
+                        <h3>Key Benefits</h3>
+                        <p>
+                            Bioprinting could save thousands of lives annually by eliminating organ shortages. Patient-specific organs reduce rejection rates and eliminate immunosuppression needs. The technology also removes ethical concerns around donation and could end exploitative organ trafficking.
+                        </p>
+                    </div>
+
+                    <div class="eval-box risks">
+                        <h3>Key Risks</h3>
+                        <p>
+                            High costs threaten equitable access, potentially creating healthcare inequality. Unresolved ethical questions about tissue ownership and the creation of living matter require robust governance. Long-term safety data remains limited, and regulatory frameworks lag behind technological capabilities.
+                        </p>
+                    </div>
+
+                    <div class="eval-box verdict">
+                        <h3>Critical Analysis</h3>
+                        <p>
+                            The benefits of bioprinting appear to outweigh risks, but only if implementation includes strong regulatory oversight, international cooperation on ethical standards, and deliberate policies ensuring equitable access regardless of socioeconomic status.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conclusion -->
+            <section class="conclusion">
+                <h2>Concluding Evaluation</h2>
+                <p>
+                    3D organ bioprinting represents one of the most significant potential advances in medical history, directly addressing the critical shortage of donor organs through innovative application of stem cell biology, materials science, and engineering. The technology's promise—eliminating transplant waiting lists, removing rejection risks, and ending organ trafficking—is profound. However, realising these benefits requires navigating complex ethical terrain regarding tissue ownership and the creation of living matter, while simultaneously ensuring that economic barriers do not create a two-tiered healthcare system where life-saving technology serves only the privileged.
+                </p>
+                <p style="margin-top: 15px;">
+                    The evidence suggests that with appropriate international regulation, transparent ethical frameworks, and commitment to equitable distribution, the benefits of bioprinting substantially outweigh its risks. The technology should be pursued, but with careful attention to the social and ethical implications that accompany such transformative innovation. Ultimately, the success of 3D organ printing will be measured not only by scientific achievement but by whether it serves all of humanity fairly.
+                </p>
+            </section>
+
+            <!-- References -->
+            <section class="references">
+                <h2>References (MLA 8th Edition)</h2>
+                <ol>
+                    <li>Danovitch, Gabriel M., and Francis L. Delmonico. "The Prohibition of Kidney Sales and Organ Markets Should Remain." <em>Current Opinion in Organ Transplantation</em>, vol. 13, no. 4, 2008, pp. 386–394.</li>
+                    <li>Gilbert, Frederic, et al. "Print Me an Organ? Ethical and Regulatory Issues Emerging from 3D Bioprinting in Medicine." <em>Science and Engineering Ethics</em>, vol. 24, no. 1, 2018, pp. 73–91.</li>
+                    <li>Murphy, Sean V., and Anthony Atala. "3D Bioprinting of Tissues and Organs." <em>Nature Biotechnology</em>, vol. 32, no. 8, 2014, pp. 773–785.</li>
+                    <li>Ozbolat, Ibrahim T., and Yin Yu. "Bioprinting Toward Organ Fabrication: Challenges and Future Trends." <em>IEEE Transactions on Biomedical Engineering</em>, vol. 60, no. 3, 2013, pp. 691–699.</li>
+                    <li>Vermeulen, Niki, et al. "3D Bioprint Me: A Socioethical View of Bioprinting Human Organs and Tissues." <em>Journal of Medical Ethics</em>, vol. 43, no. 9, 2017, pp. 618–624.</li>
+                    <li>World Health Organization. "Human Organ Transplantation." <em>WHO</em>, 2021, www.who.int/transplantation/organ/en/.</li>
+                    <li>Zhang, Yu Shrike, et al. "3D Bioprinting for Tissue and Organ Fabrication." <em>Annals of Biomedical Engineering</em>, vol. 45, no. 1, 2017, pp. 148–163.</li>
+                </ol>
+            </section>
+        </div>
+
+        <footer class="footer">
+            Scientific and Technical Innovation | Criterion D: Reflecting on the Impact of Science
+        </footer>
+    </div>
+</body>
+</html>
