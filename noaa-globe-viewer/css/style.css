@@ -1,0 +1,455 @@
+/* NOAA GOES-19 Globe Viewer — chrome that floats over a photographic Earth.
+   Restrained glassy dark UI: blur backdrops, hairline borders, soft shadows. */
+
+:root {
+  color-scheme: dark;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --glass: rgba(13, 17, 23, 0.58);
+  --glass-strong: rgba(10, 13, 18, 0.78);
+  --hairline: rgba(255, 255, 255, 0.10);
+  --text: rgba(236, 242, 248, 0.92);
+  --text-dim: rgba(236, 242, 248, 0.55);
+  --accent: #6fc3ff;
+  --accent-soft: rgba(111, 195, 255, 0.35);
+  --amber: #ffa62b;
+  --danger: #ff6b6b;
+
+  --shadow: 0 10px 34px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #05070a;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- globe stage ---------- */
+
+#globe {
+  position: fixed;
+  inset: 0;
+  touch-action: none; /* OrbitControls handles the canvas gestures */
+}
+
+#globe canvas { display: block; }
+
+/* ---------- busy indicator (thin sweep along the top edge) ---------- */
+
+.busy-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  background-position: 0% 0;
+  animation: busy-sweep 1.2s ease-in-out infinite;
+  animation-play-state: paused;
+  /* small show-delay so fast frame loads never flash */
+  transition: opacity 0.25s ease 0.15s;
+}
+
+.busy-bar.on {
+  opacity: 0.9;
+  animation-play-state: running;
+}
+
+@keyframes busy-sweep {
+  from { background-position: 0% 0; }
+  to   { background-position: 100% 0; }
+}
+
+/* ---------- title block (top-left) ---------- */
+
+.title-block {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: calc(14px + env(safe-area-inset-left));
+  z-index: 20;
+  pointer-events: none;
+  user-select: none;
+  padding: 9px 13px;
+  border-radius: 12px;
+  background: rgba(13, 17, 23, 0.40);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px) saturate(1.25);
+  -webkit-backdrop-filter: blur(12px) saturate(1.25);
+}
+
+.title-block h1 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.title-meta {
+  margin: 3px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+#source-label:empty { display: none; }
+
+.badge-demo {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  color: #ffce85;
+  background: rgba(255, 166, 43, 0.16);
+  border: 1px solid rgba(255, 166, 43, 0.45);
+  white-space: nowrap;
+}
+
+/* ---------- control bar (floating, bottom) ---------- */
+
+.control-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 20;
+  width: min(calc(100vw - 20px), 960px);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--glass);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .control-bar, .title-block, .toast, .slider-tip { background: rgba(11, 14, 19, 0.92); }
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  appearance: none;
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 7px 13px;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.btn:active:not(:disabled) { background: rgba(255, 255, 255, 0.16); }
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn-icon {
+  width: 38px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.btn-icon .icon { display: block; }
+#play-btn .icon-pause { display: none; }
+#play-btn.playing .icon-play { display: none; }
+#play-btn.playing .icon-pause { display: block; }
+
+/* ---------- selects ---------- */
+
+.select-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.select-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 7px 26px 7px 11px;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.select-wrap select:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.select-wrap select:disabled { opacity: 0.4; cursor: default; }
+
+.select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 11px;
+  top: calc(50% - 5px);
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--text-dim);
+  border-bottom: 1.5px solid var(--text-dim);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.select-wrap select option {
+  background: #10151c;
+  color: var(--text);
+}
+
+/* ---------- time slider ---------- */
+
+.slider-wrap {
+  position: relative;
+  flex: 1 1 160px;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range']:disabled { opacity: 0.4; cursor: default; }
+input[type='range']:focus-visible { outline: none; }
+
+/* --fill is set from JS so the played portion of the track reads accent-bright
+   in both engines (WebKit has no native progress pseudo-element). */
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right,
+    var(--accent) 0 var(--fill, 0%),
+    rgba(255, 255, 255, 0.18) var(--fill, 0%) 100%);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px; /* (track 4px - thumb 14px) / 2 */
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease;
+}
+
+input[type='range']:active::-webkit-slider-thumb { transform: scale(1.18); }
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 3px var(--accent-soft);
+}
+
+input[type='range']::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right,
+    var(--accent) 0 var(--fill, 0%),
+    rgba(255, 255, 255, 0.18) var(--fill, 0%) 100%);
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease;
+}
+
+input[type='range']:active::-moz-range-thumb { transform: scale(1.18); }
+input[type='range']:focus-visible::-moz-range-thumb {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.55), 0 0 0 3px var(--accent-soft);
+}
+
+/* tooltip above the thumb while scrubbing */
+.slider-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%);
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+  color: var(--text);
+  background: var(--glass-strong);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.slider-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 5px);
+  border: 5px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- time readout ---------- */
+
+.readout {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex: none;
+}
+
+.readout .sep { color: var(--text-dim); margin: 0 6px; }
+.readout .local { color: var(--text-dim); }
+
+/* ---------- toasts ---------- */
+
+.toasts {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(92vw, 520px);
+}
+
+.toast {
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 9px 15px;
+  border-radius: 11px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--glass-strong);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: none;
+}
+
+.toast.error {
+  border-color: rgba(255, 107, 107, 0.45);
+  background: linear-gradient(rgba(255, 107, 107, 0.10), rgba(255, 107, 107, 0.10)), var(--glass-strong);
+}
+
+/* ---------- focus visibility ---------- */
+
+.btn:focus-visible,
+.select-wrap select:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+/* ---------- small screens: slider takes its own full row ---------- */
+
+@media (max-width: 720px) {
+  .control-bar {
+    gap: 8px 10px;
+    padding: 9px 10px;
+  }
+
+  .slider-wrap {
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  .readout {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 11.5px;
+  }
+
+  .toasts { top: calc(72px + env(safe-area-inset-top)); }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .busy-bar {
+    animation: none;
+    background: var(--accent);
+    opacity: 0;
+  }
+  .busy-bar.on { opacity: 0.45; }
+
+  .toast {
+    transition: opacity 0.01s linear;
+    transform: none;
+  }
+
+  input[type='range']::-webkit-slider-thumb { transition: none; }
+  input[type='range']::-moz-range-thumb { transition: none; }
+  input[type='range']:active::-webkit-slider-thumb { transform: none; }
+  input[type='range']:active::-moz-range-thumb { transform: none; }
+
+  .btn, .select-wrap select { transition: none; }
+}

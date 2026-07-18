@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>GOES-19 · Full Disk · GEOCOLOR</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div id="globe"></div>
+
+  <div id="busy" class="busy-bar" aria-hidden="true"></div>
+
+  <header class="title-block">
+    <h1>GOES-19 · Full Disk · GEOCOLOR</h1>
+    <p class="title-meta">
+      <span id="source-label"></span>
+      <span id="demo-badge" class="badge-demo" hidden>DEMO DATA</span>
+    </p>
+  </header>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <footer id="controls" class="control-bar">
+    <button id="play-btn" class="btn btn-icon" type="button" disabled aria-label="Play" title="Play (Space)">
+      <svg class="icon icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M4 2.5v11a.6.6 0 0 0 .91.51l9-5.5a.6.6 0 0 0 0-1.02l-9-5.5A.6.6 0 0 0 4 2.5Z" fill="currentColor"/>
+      </svg>
+      <svg class="icon icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <rect x="3.4" y="2.5" width="3.5" height="11" rx="1" fill="currentColor"/>
+        <rect x="9.1" y="2.5" width="3.5" height="11" rx="1" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <span class="select-wrap">
+      <select id="speed-select" aria-label="Playback speed" title="Playback speed"></select>
+    </span>
+
+    <div class="slider-wrap">
+      <div id="slider-tip" class="slider-tip" hidden></div>
+      <input id="time-slider" type="range" min="0" max="0" step="1" value="0" disabled aria-label="Frame timeline">
+    </div>
+
+    <output id="time-readout" class="readout" aria-live="off"><span id="time-utc">····-··-·· ··:·· UTC</span><span class="sep">·</span><span id="time-local" class="local">··:·· local</span></output>
+
+    <span class="select-wrap">
+      <select id="res-select" aria-label="Image resolution" title="Image resolution" disabled></select>
+    </span>
+
+    <button id="latest-btn" class="btn" type="button" disabled title="Jump to newest frame">Latest</button>
+  </footer>
+
+  <script type="importmap">
+  { "imports": {
+      "three": "./vendor/three.module.min.js",
+      "three/addons/": "./vendor/addons/"
+  } }
+  </script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
