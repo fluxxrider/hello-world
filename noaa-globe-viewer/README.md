@@ -7,7 +7,10 @@ with a timeline for scrubbing through the last few days of imagery at
 10-minute steps — watch the day/night terminator sweep across the planet,
 storms spin, and city lights come out.
 
-![screenshot](screenshot.png)
+![The viewer in offline demo mode — with a network connection it shows real GEOCOLOR imagery](screenshot.png)
+
+*(shown in offline demo mode; with a network connection the globe shows real
+GEOCOLOR imagery)*
 
 ## Run it
 

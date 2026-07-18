@@ -14,9 +14,9 @@ async function main() {
   let resolution = RESOLUTIONS.includes(params.get('res')) ? params.get('res') : DEFAULT_RESOLUTION;
   let index = 0;
   let playing = false;
-  let fps = 10;
+  let fps = 5; // must match the UI speed select's default option
   let playTimer = null;
-  let frameBusy = false;
+  let busyCount = 0;
 
   const ui = initUI({
     onScrub: (i) => { stop(); show(i); },
@@ -51,15 +51,15 @@ async function main() {
   async function show(i) {
     index = Math.max(0, Math.min(i, catalog.frames.length - 1));
     ui.setFrame(index);
+    busyCount++;
     ui.setBusy(true);
-    frameBusy = true;
     try {
       await globe.showFrame(catalog.urlFor(catalog.frames[index].stamp, resolution));
     } catch {
       ui.toast(`Frame ${catalog.frames[index].stamp} failed to load; keeping previous image.`, 'info');
     } finally {
-      frameBusy = false;
-      ui.setBusy(false);
+      busyCount--;
+      ui.setBusy(busyCount > 0);
     }
   }
 
@@ -67,7 +67,7 @@ async function main() {
     playing = true;
     ui.setPlaying(true);
     playTimer = setInterval(() => {
-      if (frameBusy) return; // don't queue frames faster than they load
+      if (busyCount > 0) return; // don't queue frames faster than they load
       show(index + 1 >= catalog.frames.length ? 0 : index + 1);
     }, 1000 / fps);
   }
